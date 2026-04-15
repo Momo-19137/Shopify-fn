@@ -147,7 +147,7 @@ const ShopifyApp = {
     });
   },
 
-  async pushNotification() {
+async pushNotification() {
     const g = id => document.getElementById(id).value.trim();
     const store  = g('notifStore')  || this.data.storeName || 'My Store';
     const items  = parseInt(g('notifItems')) || 1;
@@ -155,8 +155,12 @@ const ShopifyApp = {
     const count  = Math.min(Math.max(parseInt(g('notifCount')) || 3, 1), 50);
     const speed  = document.querySelector('.speed-btn.active')?.dataset.speed || 'fast';
 
-    const startOrder = Math.floor(1000 + Math.random() * 9000);
-    const body  = `${store} has a new order for ${items} item${items !== 1 ? 's' : ''} totaling $${amount}.`;
+    // DIT IS HET NIEUWE FORMAT VOOR DE TITEL (zoals in je screenshot)
+    // We gebruiken het bolletje: •
+    const title = `€${amount}, ${items} ${items === 1 ? 'item' : 'items'} from Online Store • ${store}`;
+    
+    // De body laten we leeg of zetten we een spatie in, omdat alle info al in de titel staat
+    const body = ''; 
 
     if (!('Notification' in window)) {
       alert('Notifications not supported on this browser.');
@@ -164,33 +168,26 @@ const ShopifyApp = {
     }
 
     if (Notification.permission === 'denied') {
-      alert('Notifications are blocked. Enable them in your browser/phone settings for this site.');
+      alert('Notifications are blocked.');
       return;
     }
 
     if (Notification.permission !== 'granted') {
       const result = await Notification.requestPermission();
-      if (result !== 'granted') {
-        alert('Notification permission was not granted.');
-        return;
-      }
+      if (result !== 'granted') return;
     }
 
     this.closeSettings();
 
-    // Try SW notification, fall back to direct Notification for HTTP
     let reg = null;
     try {
-      reg = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SW timeout')), 1500))
-      ]);
+      reg = await navigator.serviceWorker.ready;
     } catch (_) {}
 
-    const icon = '/images/shopify_icon.png';
+    const icon = 'images/shopify_icon.png'; // Zorg dat dit pad klopt
 
     const fire = (i, opts) => {
-      const title = `Order #${startOrder + i}`;
+      // We gebruiken nu de 'title' die we hierboven hebben gemaakt in plaats van "Order #1234"
       if (reg) {
         reg.showNotification(title, { body, icon, ...opts });
       } else {
@@ -199,6 +196,7 @@ const ShopifyApp = {
     };
 
     const base = Date.now();
+    // ... rest van de timing logica (fast/medium/slow) blijft hetzelfde
 
     if (speed === 'fast') {
       for (let i = 0; i < count; i++) {

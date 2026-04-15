@@ -3,7 +3,7 @@ const ShopifyApp = {
 
   defaults: {
     storeName: 'larpify',
-    logoText:  'lar',
+    logoText:  '', // Leeg laten want we gebruiken een afbeelding
     avatar:    'EC',
     sales:     '1,169.61',
     gross:     '1,254.50',
@@ -43,7 +43,6 @@ const ShopifyApp = {
     }
   },
 
-
   // ── Persistence ──────────────────────────────────────────
 
   loadData() {
@@ -64,58 +63,54 @@ const ShopifyApp = {
   render() {
     const d = this.data;
     this._set('storeNameDisplay', d.storeName);
-    this._set('logoText',        d.logoText);
+    
+    // AANPASSING: Logo vervangen door shopify_icon.png
+    const logoEl = document.getElementById('logoText');
+    if (logoEl) {
+      logoEl.innerHTML = `<img src="images/shopify_icon.png" style="width:100%; height:100%; object-fit:contain;">`;
+    }
+
     this._set('avatarInitials',  d.avatar);
 
     this._set('dispVisitors',   parseInt(d.visitors) || 0);
     this._set('actionFulfill',  d.fulfill);
     this._set('actionPayments', d.payments);
 
-    // Filter button period label
     const p = this.periodLabels[d.period] || this.periodLabels['12h'];
     const filterBtn = document.getElementById('filterPeriodBtn');
     if (filterBtn) filterBtn.innerHTML = p.btn + ' <span class="chevron">▾</span>';
 
-    // Chart x-axis labels
     this._set('xLabel1', p.x[0]);
     this._set('xLabel2', p.x[1]);
     this._set('xLabel3', p.x[2]);
 
-    // Refresh carousel stats with updated data
     if (this._refreshCarousel) this._refreshCarousel();
-
-    // Update chart y-axis labels based on current values
     this.updateChartAxes();
   },
 
   updateChartAxes() {
     const d = this.data;
-
     const fmtMoney = (val) => {
       if (val >= 1000000) return '$' + (val / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
       if (val >= 1000)    return '$' + (val / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
       return '$' + val;
     };
 
-    // chart0: Total sales
     const sales = parseFloat(String(d.sales).replace(/,/g, '')) || 0;
     const salesMax = Math.ceil(sales / 100) * 100 || 1000;
     this._set('yTop0', fmtMoney(salesMax));
     this._set('yMid0', fmtMoney(Math.round(salesMax / 2)));
 
-    // chart1: Orders
     const orders = parseInt(d.orders) || 0;
     const ordersMax = Math.max(orders, 1);
     this._set('yTop1', String(ordersMax));
     this._set('yMid1', String(Math.round(ordersMax / 2)));
 
-    // chart2: Conversion rate
     const conv = parseFloat(d.conv) || 0;
     const convMax = Math.max(Math.ceil(conv / 5) * 5, 5);
     this._set('yTop2', convMax + '%');
     this._set('yMid2', (convMax / 2) + '%');
 
-    // chart3: Gross sales
     const gross = parseFloat(String(d.gross).replace(/,/g, '')) || 0;
     const grossMax = Math.ceil(gross / 100) * 100 || 1000;
     this._set('yTop3', fmtMoney(grossMax));
@@ -127,7 +122,7 @@ const ShopifyApp = {
     if (el) el.textContent = text;
   },
 
-  // ── Settings ─────────────────────────────────────────────
+  // ── Settings & Notifications ─────────────────────────────
 
   bindEvents() {
     document.getElementById('openSettings') .addEventListener('click', () => this.openSettings());
@@ -135,7 +130,6 @@ const ShopifyApp = {
     document.getElementById('saveSettings') .addEventListener('click', () => this.saveSettings());
     document.getElementById('pushNotif')    .addEventListener('click', () => this.pushNotification());
 
-    // Speed toggle
     document.querySelectorAll('.speed-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
@@ -147,7 +141,7 @@ const ShopifyApp = {
     });
   },
 
-async pushNotification() {
+  async pushNotification() {
     const g = id => document.getElementById(id).value.trim();
     const store  = g('notifStore')  || this.data.storeName || 'My Store';
     const items  = parseInt(g('notifItems')) || 1;
@@ -155,12 +149,10 @@ async pushNotification() {
     const count  = Math.min(Math.max(parseInt(g('notifCount')) || 3, 1), 50);
     const speed  = document.querySelector('.speed-btn.active')?.dataset.speed || 'fast';
 
-    // DIT IS HET NIEUWE FORMAT VOOR DE TITEL (zoals in je screenshot)
-    // We gebruiken het bolletje: •
+    // AANPASSING: Tekst format precies zoals in screenshot
+    // €[bedrag], [items] items from Online Store • [shopnaam]
     const title = `€${amount}, ${items} ${items === 1 ? 'item' : 'items'} from Online Store • ${store}`;
-    
-    // De body laten we leeg of zetten we een spatie in, omdat alle info al in de titel staat
-    const body = ''; 
+    const body  = ""; // Body leeg laten voor de look uit de screenshot
 
     if (!('Notification' in window)) {
       alert('Notifications not supported on this browser.');
@@ -184,10 +176,9 @@ async pushNotification() {
       reg = await navigator.serviceWorker.ready;
     } catch (_) {}
 
-    const icon = 'images/shopify_icon.png'; // Zorg dat dit pad klopt
+    const icon = 'images/shopify_icon.png';
 
     const fire = (i, opts) => {
-      // We gebruiken nu de 'title' die we hierboven hebben gemaakt in plaats van "Order #1234"
       if (reg) {
         reg.showNotification(title, { body, icon, ...opts });
       } else {
@@ -196,8 +187,6 @@ async pushNotification() {
     };
 
     const base = Date.now();
-    // ... rest van de timing logica (fast/medium/slow) blijft hetzelfde
-
     if (speed === 'fast') {
       for (let i = 0; i < count; i++) {
         setTimeout(() => fire(i, { vibrate: [100], tag: `order-${base}-${i}` }), i * 150);
@@ -212,7 +201,6 @@ async pushNotification() {
       }
     }
   },
-
 
   openSettings() {
     const d = this.data;
@@ -258,6 +246,8 @@ async pushNotification() {
     this.render();
   },
 
+  // ── Carousel & Charts Logic (Blijft hetzelfde) ────────────
+  
   drawChart() {},
 
   initCarousel() {
@@ -265,11 +255,11 @@ async pushNotification() {
     const panelA    = document.getElementById('panelA');
     const panelB    = document.getElementById('panelB');
     const chartPool = document.getElementById('chartPool');
-    const areaA     = document.getElementById('chartAreaA');
-    const areaB     = document.getElementById('chartAreaB');
+    const areaA      = document.getElementById('chartAreaA');
+    const areaB      = document.getElementById('chartAreaB');
 
     const defs = [
-      { label: 'Total sales',     short: 'Total sales',  val: () => '$' + this.data.sales },
+      { label: 'Total sales',    short: 'Total sales',  val: () => '$' + this.data.sales },
       { label: 'Orders',          short: 'Orders',       val: () => this.data.orders       },
       { label: 'Conversion rate', short: 'Conversion',   val: () => this.data.conv + '%'   },
       { label: 'Gross sales',     short: 'Gross sales',  val: () => '$' + this.data.gross  },
@@ -303,9 +293,6 @@ async pushNotification() {
 
     const getW = () => viewport.offsetWidth || window.innerWidth;
 
-    // Move both panels: A at tx, B offset one full width in the opposite direction.
-    // swipeDir=-1 (left): B starts at +W (right side), slides in.
-    // swipeDir=+1 (right): B starts at -W (left side), slides in.
     const move = (tx, progress, dur) => {
       const w = getW();
       const tr = dur ? `transform ${dur}, opacity ${dur}` : 'none';
@@ -363,7 +350,6 @@ async pushNotification() {
       animating = true;
 
       if (committed) {
-        // panelA exits fully in swipe direction, panelB lands at 0
         move(swipeDir * W, 1, ease);
         setTimeout(() => {
           current = swipeNext;
@@ -398,11 +384,8 @@ async pushNotification() {
     const THRESHOLD = 80;
 
     let startY = 0, pulling = false, refreshing = false;
-
     const rubberBand = dy => dy * 0.55;
-
-    const getPull = () =>
-      parseFloat(el.style.transform?.match(/translateY\(([^p]+)px\)/)?.[1] ?? 0) || 0;
+    const getPull = () => parseFloat(el.style.transform?.match(/translateY\(([^p]+)px\)/)?.[1] ?? 0) || 0;
 
     const reset = (doRefresh) => {
       pulling = false;

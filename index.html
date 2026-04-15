@@ -28,11 +28,11 @@
     <meta name="twitter:title" content="Shopify">
     <meta name="twitter:description" content="Pixel-perfect Shopify analytics dashboard simulator. Customize stats, send notifications, install as PWA.">
     <meta name="twitter:image" content="https://larpify.pro/images/og-image.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/shopify_icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/shopify_icon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="images/shopify_icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="image.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="image.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="image.png">
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,9 +40,6 @@
 <body>
 <div id="appBody">
 
-<!-- ============================================================
-     SETTINGS  (tap the teal logo tile to open)
-     ============================================================ -->
 <div id="settingsPage" class="settings-page">
     <div class="settings-header">
         <button id="closeSettings" class="back-btn">
@@ -158,12 +155,8 @@
     </div>
 </div>
 
-<!-- ============================================================
-     MAIN APP
-     ============================================================ -->
 <div id="mainPage">
 
-    <!-- Black header bar -->
     <header class="app-header">
         <div class="header-left">
             <button id="openSettings" class="logo-tile" aria-label="Settings">
@@ -183,7 +176,6 @@
         </div>
     </header>
 
-    <!-- Pull-to-refresh spinner -->
     <div class="ptr-spinner" id="ptrSpinner">
         <div class="spinner">
             <div class="spinner-blade"></div>
@@ -197,10 +189,8 @@
         </div>
     </div>
 
-    <!-- Scrollable white content -->
     <div id="contentWrapper" class="content-wrapper">
 
-        <!-- Filter row -->
         <div class="filter-row">
             <button class="filter-btn" id="filterPeriodBtn">Last 12 hours <span class="chevron">▾</span></button>
             <button class="live-btn" id="liveViewBtn">
@@ -217,9 +207,7 @@
             </button>
         </div>
 
-        <!-- Metrics + chart (progressive slide+fade carousel) -->
         <div id="metricsViewport">
-            <!-- Panel A: active content -->
             <div id="panelA">
                 <div class="stats-row">
                     <div class="stat-col">
@@ -237,7 +225,6 @@
                 </div>
                 <div class="chart-area" id="chartAreaA"></div>
             </div>
-            <!-- Panel B: incoming content, sits one full width to the right -->
             <div id="panelB" aria-hidden="true">
                 <div class="stats-row">
                     <div class="stat-col">
@@ -255,10 +242,8 @@
                 </div>
                 <div class="chart-area" id="chartAreaB"></div>
             </div>
-            <!-- Chart pool: SVG storage, moved into panels as needed -->
             <div id="chartPool" style="display:none">
 
-                <!-- chart0: Total sales — volatile wavy line -->
                 <svg id="chart0" viewBox="0 0 400 175" width="100%" height="175" xmlns="http://www.w3.org/2000/svg">
                     <line x1="36" y1="10" x2="394" y2="10" stroke="#eeeeef" stroke-width="1"></line>
                     <line x1="36" y1="72" x2="394" y2="72" stroke="#eeeeef" stroke-width="1"></line>
@@ -273,7 +258,6 @@
                     <path d="M36,65 C50,65 56,25 68,25 C80,25 96,96 110,96 C124,96 134,28 148,28 C162,28 176,63 186,62 C196,61 208,54 216,55 C224,56 244,76 250,75 C256,74 264,58 270,60 C276,62 286,80 298,78 C308,76 318,13 330,13 C342,13 354,120 364,118 C376,116 390,80 394,78" fill="none" stroke="#13ACF0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
 
-                <!-- chart1: Orders — slow start, big spike middle, trails off -->
                 <svg id="chart1" viewBox="0 0 400 175" width="100%" height="175" xmlns="http://www.w3.org/2000/svg">
                     <line x1="36" y1="10" x2="394" y2="10" stroke="#eeeeef" stroke-width="1"></line>
                     <line x1="36" y1="72" x2="394" y2="72" stroke="#eeeeef" stroke-width="1"></line>
@@ -288,7 +272,6 @@
                     <path d="M36,55 C50,55 58,96 70,96 C82,96 96,30 110,28 C124,26 136,85 148,86 C162,87 176,40 186,38 C198,36 212,18 224,16 C238,14 250,72 262,74 C276,76 286,58 298,60 C310,62 320,92 334,94 C348,96 358,44 368,42 C382,40 390,66 394,68" fill="none" stroke="#13ACF0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
 
-                <!-- chart2: Conversion rate — gradual upward trend through the day -->
                 <svg id="chart2" viewBox="0 0 400 175" width="100%" height="175" xmlns="http://www.w3.org/2000/svg">
                     <line x1="36" y1="10" x2="394" y2="10" stroke="#eeeeef" stroke-width="1"></line>
                     <line x1="36" y1="72" x2="394" y2="72" stroke="#eeeeef" stroke-width="1"></line>
@@ -303,7 +286,6 @@
                     <path d="M36,36 C50,36 58,80 72,82 C84,84 96,28 110,26 C124,24 134,76 148,78 C162,80 178,30 190,28 C202,26 214,88 226,90 C238,92 250,50 264,46 C278,42 290,92 300,94 C312,96 322,36 334,32 C348,28 360,72 370,74 C384,76 390,52 394,54" fill="none" stroke="#13ACF0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
 
-                <!-- chart3: Gross sales — hill shape, peaks midday -->
                 <svg id="chart3" viewBox="0 0 400 175" width="100%" height="175" xmlns="http://www.w3.org/2000/svg">
                     <line x1="36" y1="10" x2="394" y2="10" stroke="#eeeeef" stroke-width="1"></line>
                     <line x1="36" y1="72" x2="394" y2="72" stroke="#eeeeef" stroke-width="1"></line>
@@ -322,7 +304,6 @@
         </div>
 
 
-        <!-- Action boxes -->
         <div class="action-section">
             <div class="action-grid">
                 <div class="action-box">
@@ -338,7 +319,6 @@
             </div>
         </div>
 
-        <!-- Promo card -->
         <div class="promo-card">
             <div class="promo-card-header">
                 <span class="promo-card-title">Start selling and earn 1% back in credits</span>
@@ -353,9 +333,7 @@
         <div style="height:110px;"></div>
     </div>
 
-    <!-- Floating pill bottom navigation -->
     <nav class="bottom-nav">
-        <!-- Search (standalone circle) -->
         <button class="nav-btn nav-btn-edge">
             <svg viewBox="0 0 60 60" fill="none" aria-hidden="true">
                 <circle cx="27" cy="27" r="13.5" stroke="currentColor" stroke-width="3" fill="none"></circle>
@@ -363,7 +341,6 @@
             </svg>
         </button>
 
-        <!-- Center pill: 4 main icons -->
         <div class="nav-center-pill">
             <button class="nav-btn active">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
@@ -390,7 +367,6 @@
             </button>
         </div>
 
-        <!-- AI buddy (standalone circle) -->
         <button class="nav-btn nav-btn-edge nav-btn-ai">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
                 <path d="m8.943 12.05-.002.002c-.73.351-1.465.231-2.204-.105-.252-.114-.532-.083-.713.077a.47.47 0 0 0-.162.339.55.55 0 0 0 .146.377c.479.552 1.198.91 1.954.923.827.035 1.596-.417 2.027-1.07a.54.54 0 0 0 .096-.383.45.45 0 0 0-.202-.31c-.198-.13-.473-.117-.7.02q-.12.075-.24.13"></path>
@@ -401,7 +377,7 @@
 
 </div>
 </div>
-<script src="js/wallet.js"></script>
+<script src="wallet.js"></script>
 
 
 </body></html>
